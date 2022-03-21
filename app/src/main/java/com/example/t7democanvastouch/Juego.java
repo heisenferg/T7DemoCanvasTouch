@@ -112,7 +112,7 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Surfac
             myPaint.setStyle(Paint.Style.STROKE);
 
             //Toda el canvas en rojo
-            canvas.drawColor(Color.RED);
+            canvas.drawColor(Color.GRAY);
 
             //Dibujar muñeco de android
             bmp = BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher);
@@ -120,7 +120,7 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Surfac
 
             //Cambiar color y tamaño de brocha
             myPaint.setStrokeWidth(10);
-            myPaint.setColor(Color.BLUE);
+            myPaint.setColor(Color.RED);
 
             //dibujar rectángulo de 300x300
             canvas.drawRect(rectInicialx+x, rectInicialy+y, 300, 300, myPaint);
@@ -133,7 +133,10 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Surfac
 
             //Si ha ocurrido un toque en la pantalla "Touch", dibujar un círculo
             if(hayToque){
+                myPaint.setColor(Color.YELLOW);
+
                 canvas.drawCircle(touchX, touchY, 20, myPaint);
+
             }
 
 
