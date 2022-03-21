@@ -15,6 +15,10 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 
+import androidx.core.view.MotionEventCompat;
+
+import java.util.ArrayList;
+
 public class Juego extends SurfaceView implements SurfaceHolder.Callback, SurfaceView.OnTouchListener {
     private Bitmap bmp;
     private SurfaceHolder holder;
@@ -37,9 +41,13 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Surfac
     private boolean hacia_abajo=true;
     private static final String TAG = Juego.class.getSimpleName();
 
+
     /*Coordenadas del touch*/
     int touchX, touchY;
     boolean hayToque=false;
+
+    //Toques
+    private ArrayList<Toque> toques = new ArrayList<Toque>();
 
     public Juego(Activity context) {
         super(context);
@@ -134,8 +142,13 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Surfac
             //Si ha ocurrido un toque en la pantalla "Touch", dibujar un círculo
             if(hayToque){
                 myPaint.setColor(Color.YELLOW);
+                for (Toque t : toques){
+                    canvas.drawCircle(t.x, t.y, 100, myPaint);
+                    canvas.drawText(t.index + "", t.x, t.y, myPaint);
+                }
 
-                canvas.drawCircle(touchX, touchY, 20, myPaint);
+               //Antiguo
+                // canvas.drawCircle(touchX, touchY, 20, myPaint);
 
             }
 
@@ -168,18 +181,39 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Surfac
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
+        int index;
+        int x,y;
+
+        // Obtener el pointer asociado con la acción
+        index = MotionEventCompat.getActionIndex(event);
 
         switch(event.getActionMasked()){
             case MotionEvent.ACTION_DOWN:
+            case MotionEvent.ACTION_POINTER_DOWN:
                 hayToque=true;
+                x = (int) MotionEventCompat.getX(event, index);
+                y = (int) MotionEventCompat.getY(event, index);
+                synchronized(this) {
+                    toques.add(index, new Toque(index, x, y));
+                }
+                Log.i(Juego.class.getSimpleName(),"Pulsado dedo "+index+".");
                 break;
+
+            case MotionEvent.ACTION_POINTER_UP:
+                synchronized(this) {
+                    toques.remove(index);
+                }
+                Log.i(Juego.class.getSimpleName(),"Soltado dedo "+index+".");
+                break;
+
             case MotionEvent.ACTION_UP:
+                synchronized(this) {
+                    toques.remove(index);
+                }
+                Log.i(Juego.class.getSimpleName(),"Soltado dedo "+index+".ultimo.");
                 hayToque=false;
                 break;
         }
-
-        touchX=(int) event.getX();
-        touchY=(int) event.getY();
 
         return true;
     }
